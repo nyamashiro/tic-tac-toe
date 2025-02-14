@@ -29,7 +29,7 @@ const game = (function gameboard() {
   }
 
   const placeMark = (row, col, mark) => {
-    if (board[row][col] === undefined) {
+    if (row >= rows || board[row][col] === undefined) {
       console.log("invalid move, cell does not exist")
       console.log(getBoard())
       return
@@ -63,14 +63,13 @@ const game = (function gameboard() {
     let cell2;
     let cell3;
 
-
     //check if any rows have won
     for (let row of getBoard()) {
       if (row[0] === row[1] && row[1] === row[2]) {
         return checkWinnerMark(row[0], name)
       }
     }
-
+    
     //check if any columns have won
     for (let i = 0; i < 3; i++) {
       cell1 = getBoard()[0][i];
