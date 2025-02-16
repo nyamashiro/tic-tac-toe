@@ -3,3 +3,47 @@
   grid-template-columns: repeat(3, 50px);
   grid-template-rows: repeat(3, 50px);
 }
+
+.turn {
+  font-size: 1.5rem;
+}
+
+.container {
+  display: grid;
+  justify-content: center;
+}
+
+.start {
+  justify-self: center;
+  width: 130px;
+  height: 40px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 25px;
+  border: 0px;
+  background-color: rgb(230, 34, 0);
+  color: white;
+  cursor: pointer;
+}
+
+.board {
+  justify-self: center;
+}
+
+.turn {
+  justify-self: center;
+}
+
+.restart {
+  justify-self: center;
+  width: 130px;
+  height: 40px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 25px;
+  border: 0px;
+  background-color: rgb(230, 34, 0);
+  color: white;
+  cursor: pointer;
+  margin-top: 50px;
+}
