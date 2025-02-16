@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,12 +8,26 @@
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
+
 <body>
 
   <div class="container">
+    <h1>Let's play Tic Tac Toe!</h1>
     <h1 class="turn"></h1>
     <div class="board"></div>
+    <dialog class="dialog">
+      <form action="#" method="get" class="book-form" autofocus>
+        <label for="playerOne">Player One:
+          <input type="text" id="playerOne" required>
+        </label>
+        <label for="playerTwo">Player Two:
+          <input type="text" id="playerTwo" required>
+        </label>
+        <button class="button" type="submit">Go!</button>
+      </form>
+    </dialog>
   </div>
-  
+
 </body>
+
 </html>
