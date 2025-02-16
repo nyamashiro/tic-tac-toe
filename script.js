@@ -20,21 +20,15 @@ const game = (function gameboard() {
         board[i].push("")
       }
     }
-    console.log(getBoard());
   }
 
   const placeMark = (row, col, mark) => {
     if (row >= rows || board[row][col] === undefined) {
-      console.log("invalid move, cell does not exist")
-      console.log(getBoard())
       return
     } else if (!!board[row][col]) {
-      console.log("invalid move, cell already occupied")
-      console.log(getBoard())
       return
     } else {
       board[row][col] = mark;
-      console.log(getBoard())
       return true
     }
   }
@@ -42,10 +36,8 @@ const game = (function gameboard() {
   const checkWinnerMark = (mark, name) => {
     switch (mark) {
       case "X":
-        console.log(`${name} is the winner`)
         return true;
       case "O":
-        console.log(`${name} is the winner`)
         return true;
       default:
         return;
@@ -85,7 +77,6 @@ const game = (function gameboard() {
 
     //check for tie 
     if (getBoard().flat().every(cell => !!cell)) {
-      console.log("It's a tie!")
       return "tie";
     }
   }
@@ -112,20 +103,24 @@ const gameController = function (
 
   let activePlayer = players[0];
 
-  const newGame = (choice = false) => {
-    if (choice) {
-      board.resetBoard()
-      activePlayer = players[0]
-      console.log(`It is ${getActivePlayer().name}'s turn`)
-    } else {
-      return;
-    }
+  const newGame = () => {
+    board.resetBoard()
+    gameOver = false;
+    activePlayer = players[0]
   }
 
   const isGameOver = () => gameOver;
 
   const switchPlayerTurn = () => {
     activePlayer = activePlayer === players[0] ? players[1] : players[0]
+  }
+
+  const setPlayerNames = function () {
+    const playerNames = document.querySelectorAll("input")
+    for (let i = 0; i < 2; i++) {
+      let customName = playerNames[i].value;
+      players[i].name = customName;
+    }
   }
 
   const getActivePlayer = () => activePlayer;
@@ -138,25 +133,21 @@ const gameController = function (
 
 
     if (board.checkWinner(getActivePlayer().name) && board.checkWinner(getActivePlayer().name) !== "tie") {
-      console.log("Would you like to play a new game?")
       gameOver = "winner";
       return;
     } else if (board.checkWinner(getActivePlayer().name) === "tie") {
-      console.log("TIEE")
       gameOver = "tie";
     } else {
       if (playerMove === undefined) {
-        console.log(`It is still ${getActivePlayer().name}'s turn`)
         return;
       } else {
         switchPlayerTurn();
-        console.log(`It is ${getActivePlayer().name}'s turn`)
         return true;
       }
     }
   }
 
-  return { playRound, getActivePlayer, newGame, getBoard: board.getBoard, switchPlayerTurn, isGameOver }
+  return { playRound, getActivePlayer, newGame, getBoard: board.getBoard, isGameOver, setPlayerNames }
 }
 
 const displayController = function () {
@@ -164,10 +155,12 @@ const displayController = function () {
   const gameBoard = gameController();
   const playerDiv = document.querySelector(".turn");
   const boardDiv = document.querySelector(".board");
-
+  const container = document.querySelector(".container");
+  const dialog = document.querySelector("dialog");
 
   const renderBoard = function () {
     const board = gameBoard.getBoard();
+    boardDiv.textContent = "";
 
     board.forEach((row, i) => {
       row.forEach((cell, index) => {
@@ -187,10 +180,8 @@ const displayController = function () {
 
     let targetRow = e.target.dataset.row;
     let targetCell = e.target.dataset.cell;
-
     let currentPlayerMark = gameBoard.getActivePlayer().mark
     let currentPlayer = gameBoard.getActivePlayer().name;
-
     let playerMove = gameBoard.playRound(targetRow, targetCell)
 
     if (playerMove) {
@@ -199,15 +190,56 @@ const displayController = function () {
     } else if (gameBoard.isGameOver() === "winner") {
       renderWinner(currentPlayer);
       renderPlayerMark(targetRow, targetCell, currentPlayerMark);
+      renderRestartButton();
     } else if (gameBoard.isGameOver() === "tie") {
       renderTie();
       renderPlayerMark(targetRow, targetCell, currentPlayerMark);
+      renderRestartButton();
     }
   })
 
+  container.addEventListener("click", (e) => {
+    if (e.target.classList.contains("restart")) {
+      resetGame(gameBoard.getActivePlayer().name)
+    }
+
+    if (e.target.classList.contains("start")) {
+      dialog.showModal();
+    }
+
+    if (e.target.classList.contains("button")) {
+      const form = document.querySelector("form");
+      if (!form.checkValidity()) {
+        return
+      }
+      e.preventDefault();
+      startGame();
+    }
+  })
+
+  const resetGame = function (name) {
+    const restart = document.querySelector(".restart")
+    gameBoard.newGame();
+    container.removeChild(restart)
+    boardDiv.textContent = "";
+    playerDiv.textContent = "";
+    renderStartButton();
+  }
+
+  const startGame = function() {
+    if (document.querySelector(".start")) {
+      const start = document.querySelector(".start");
+      container.removeChild(start)
+    }
+    gameBoard.setPlayerNames();
+    dialog.close();
+    renderBoard();
+    renderInitialPlayerName();
+  }
 
   const renderInitialPlayerName = function () {
     let activePlayer = gameBoard.getActivePlayer();
+    playerDiv.textContent = "";
     const player = document.createElement("h2");
     player.classList.add("player");
     player.textContent = `It is ${activePlayer.name}'s turn`;
@@ -234,16 +266,26 @@ const displayController = function () {
 
   const renderTie = function () {
     const tie = document.querySelector("h2");
-    tie.textContent = "It's a tie! No one wins :(";
+    tie.textContent = "It's a tie! No one wins";
     playerDiv.appendChild(tie)
   }
 
+  const renderRestartButton = function () {
+    const restart = document.createElement("button");
+    restart.classList.add("restart");
+    restart.textContent = "Reset game";
+    container.appendChild(restart)
+  }
 
-  renderBoard();
-  renderInitialPlayerName();
-
+  const renderStartButton = function () {
+    if (!document.querySelector(".start")) {
+      const start = document.createElement("button");
+      start.classList.add("start");
+      start.textContent = "Start game";
+      container.appendChild(start);
+    }
+  }
+  renderStartButton();
 }
-
-const start = gameController();
 
 displayController();
